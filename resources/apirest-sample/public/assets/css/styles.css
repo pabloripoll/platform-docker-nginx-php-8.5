@@ -1,0 +1,25 @@
+:root {
+    color-scheme: light dark;
+    --light-bg: ghostwhite;
+    --light-color: darkslategray;
+    --light-code: rgb(60, 39, 245);
+    --dark-bg: rgb(30, 30, 30);
+    --dark-color: ghostwhite;
+    --dark-code: rgb(103, 87, 255);
+}
+* {
+    background-color: light-dark(var(--light-bg), var(--dark-bg));
+    color: light-dark(var(--light-color), var(--dark-color));
+}
+body {
+    display: inline-block;
+    margin: 0px 5%;
+    text-align: center;
+    width: 90%;
+}
+span {
+    color: light-dark(var(--light-code), var(--dark-code));
+}
+svg {
+    margin: 40px auto 10px auto;
+}
