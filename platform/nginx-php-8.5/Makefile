@@ -92,6 +92,8 @@ else
 	COMPOSE_PROJECT_SWAP=\"$(DOCKER_SWAP)\"\r\n\
 	COMPOSE_PROJECT_USER=\"$(DOCKER_USER)\"\r\n\
 	COMPOSE_PROJECT_GROUP=\"$(DOCKER_GROUP)\"" > ./docker/.env; \
+	chmod +x ./docker/config/ownerships.sh
+	./docker/config/ownerships.sh $(DOCKER_USER) $(DOCKER_GROUP)
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - "${C_YEL}"docker-compose.yml"${C_END}" .env file "${C_GRN}"has been set."${C_END};
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container: "${C_GRN}$(DOCKER_CONTAINER)${C_END}
 	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Max. memory usage: "${C_GRN}$(DOCKER_CAAS_MEM)${C_END}" - swap: "${C_GRN}$(DOCKER_CAAS_SWAP)${C_END}
