@@ -21,7 +21,7 @@ endif
 
 include ../../.env
 
-DOCKER_PLTF="NGINX - PHP 8.5"
+DOCKER_PLTF="NGINX + PHP 8.3"
 DOCKER_LEAD=$(PROJECT_LEAD)
 DOCKER_CNET=$(PROJECT_CNET)
 DOCKER_HOST=$(PROJECT_HOST)
@@ -29,8 +29,9 @@ DOCKER_IMGK=$(APIREST_IMGK)
 DOCKER_CAAS=$(APIREST_CAAS)
 DOCKER_PORT=$(APIREST_PORT)
 DOCKER_BIND=$(APIREST_BIND)
-DOCKER_MEM=$(APIREST_CAAS_MEM)
-DOCKER_SWAP=$(APIREST_CAAS_SWAP)
+DOCKER_CPUS=$(APIREST_CAAS_CPUS)
+DOCKER_CAAS_MEM=$(APIREST_CAAS_MEM)
+DOCKER_CAAS_SWAP=$(APIREST_CAAS_SWAP)
 DOCKER_USER=$(APIREST_CAAS_USER)
 DOCKER_GROUP=$(APIREST_CAAS_GROUP)
 
@@ -88,16 +89,20 @@ else
 	COMPOSE_PROJECT_HOST=\"$(DOCKER_HOST)\"\r\n\
 	COMPOSE_PROJECT_PORT=$(DOCKER_PORT)\r\n\
 	COMPOSE_PROJECT_PATH=\"$(DOCKER_BIND)\"\r\n\
-	COMPOSE_PROJECT_MEM=\"$(DOCKER_MEM)\"\r\n\
-	COMPOSE_PROJECT_SWAP=\"$(DOCKER_SWAP)\"\r\n\
+	COMPOSE_PROJECT_CPUS=\"$(DOCKER_CPUS)\"\r\n\
+	COMPOSE_PROJECT_MEM=\"$(DOCKER_CAAS_MEM)\"\r\n\
+	COMPOSE_PROJECT_SWAP=\"$(DOCKER_CAAS_SWAP)\"\r\n\
 	COMPOSE_PROJECT_USER=\"$(DOCKER_USER)\"\r\n\
 	COMPOSE_PROJECT_GROUP=\"$(DOCKER_GROUP)\"" > ./docker/.env; \
 	chmod +x ./docker/config/ownerships.sh
 	./docker/config/ownerships.sh $(DOCKER_USER) $(DOCKER_GROUP)
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - "${C_YEL}"docker-compose.yml"${C_END}" .env file "${C_GRN}"has been set."${C_END};
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container: "${C_GRN}$(DOCKER_CONTAINER)${C_END}
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Max. memory usage: "${C_GRN}$(DOCKER_CAAS_MEM)${C_END}" - swap: "${C_GRN}$(DOCKER_CAAS_SWAP)${C_END}
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" APIREST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Served at: "${C_GRN}http://127.0.0.1:$(DOCKER_PORT)${C_END}
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - "${C_YEL}"docker-compose.yml"${C_END}" .env file "${C_GRN}"has been set."${C_END};
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container name: "${C_GRN}$(DOCKER_CONTAINER)${C_END}
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Container image: "${C_GRN}$(DOCKER_CONTAINER):$(DOCKER_IMGK)${C_END}
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Max. CPUs: "${C_GRN}$(DOCKER_CPUS)${C_END}
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Max. memory: "${C_GRN}$(DOCKER_MEM)${C_END}" - Swap: "${C_GRN}$(DOCKER_SWAP)${C_END}
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Localhost: http://127.0.0.1:"${C_GRN}"$(DOCKER_PORT)"${C_END};
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" API REST "${C_YEL}$(DOCKER_PLTF)${C_END}" - Hostname: http://$(word 1,$(shell hostname -I)):"${C_GRN}"$(DOCKER_PORT)"${C_END};
 endif
 
 # -------------------------------------------------------------------------------------------------
@@ -106,11 +111,13 @@ endif
 .PHONY: info ssh build up dev start stop restart clear destroy
 
 info: ## shows container information
-	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}" - APIREST: "${C_GRN}"$(DOCKER_PLTF)"${C_END};
+	echo ${C_BLU}"$(PROJECT_NAME)"${C_END}": "${C_GRN}"$(DOCKER_PLTF)"${C_END};
 	printf ${C_YEL}"Container ID.: "${C_END}; $(DOCKER) ps -aqf "name=^$(DOCKER_CONTAINER)$$"; printf "%s";
 	echo ${C_YEL}"Name.........: "${C_END}$(DOCKER_CONTAINER);
 	echo ${C_YEL}"Image........: "${C_END}"$(DOCKER_CONTAINER):$(DOCKER_IMGK)";
-	echo ${C_YEL}"Memory.......: "${C_END}"$(DOCKER_MEM)";
+	echo ${C_YEL}"CPUs.........: "${C_END}"$(DOCKER_CPUS)";
+	echo ${C_YEL}"RAM..........: "${C_END}"$(DOCKER_MEM)";
+	echo ${C_YEL}"SWAP.........: "${C_END}"$(DOCKER_SWAP)";
 	echo ${C_YEL}"Host.........: "${C_END}"$(DOCKER_HOST):$(DOCKER_PORT)";
 	echo ${C_YEL}"Hostname.....: "${C_END}"$(word 1,$(shell hostname -I)):"$(DOCKER_PORT);
 	printf ${C_YEL}"Docker.Host..: "${C_END};$(DOCKER) inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(DOCKER_CONTAINER);
@@ -128,7 +135,7 @@ up: ## attaches to containers for a service and also starts any linked services
 start: ## starts the container and put on running
 	cd docker && $(DOCKER_COMPOSE) start
 
-stop: ## stops the running container but data won't be destroyed
+stop: ## stops the running container but data will not be destroyed
 	cd docker && $(DOCKER_COMPOSE) stop
 
 restart: ## restarts the running container
