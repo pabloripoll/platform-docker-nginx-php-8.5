@@ -4,6 +4,12 @@
  * Helper functions
  */
 
+if (! function_exists('db')) {
+    function db() {
+        return new Database\Connection;
+    }
+}
+
 if (! function_exists('env')) {
     /**
      * Get an environment value.
@@ -17,21 +23,20 @@ if (! function_exists('env')) {
     {
         static $loaded = false;
 
+        $projectRoot = dirname(__DIR__, 2);
+        $envPath = $projectRoot . '/.env';
+
         // Load .env once if vlucas/phpdotenv is available and a .env file exists.
         if (! $loaded) {
-            $projectRoot = dirname(__DIR__, 2); // assuming src/Support -> projectRoot/src/Support
-            $envPath = $projectRoot . '/.env';
-
             if (file_exists($envPath) && class_exists(\Dotenv\Dotenv::class)) {
                 // createImmutable will not overwrite existing env vars by default
                 try {
+                    $loaded = true;
                     Dotenv\Dotenv::createImmutable($projectRoot)->safeLoad();
                 } catch (\Throwable $e) {
                     // ignore loading errors; fall back to getenv/$_ENV
                 }
             }
-
-            $loaded = true;
         }
 
         if ($key === null) {

@@ -3,11 +3,35 @@
 namespace App\Controller;
 
 use Core\Request;
+use Exception;
 use App\Service\Mailer;
 use App\Service\TaskQueue;
 
 class ApiController
 {
+    /**
+     * GET /api/test/database
+     */
+    public function testDatabase(Request $request)
+    {
+        $response = [
+            'status' => true,
+            'message' => 'Core database successfully connected.',
+        ];
+
+        try {
+            db()::core();
+        } catch (Exception $e) {
+            $response = [
+                'status' => false,
+                'message' => 'Core database connection error.',
+                'error' => $e->getMessage(),
+            ];
+        }
+
+        return response()->json($response, 200);
+    }
+
     /**
      * POST /api/test/testMail
      * Uses PHPMailer to send via MailHog (local SMTP on port 1025 by default).

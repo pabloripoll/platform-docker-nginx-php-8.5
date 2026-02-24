@@ -3,12 +3,13 @@
     "type": "project",
     "autoload": {
         "psr-4": {
-            "App\\": "src/",
+            "App\\": "app/",
             "Core\\": "core/",
-            "Database\\": "database/"
+            "Database\\": "database/",
+            "DB\\": "database/Connection.php"
         },
         "files": [
-            "src/Support/Helper.php"
+            "core/Support/Helper.php"
         ]
     },
     "authors": [

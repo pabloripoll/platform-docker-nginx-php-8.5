@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Support;
+namespace Core\Support;
 
 /**
  * Support class to be implemented instead of stopping execution with var_dump() or dd()

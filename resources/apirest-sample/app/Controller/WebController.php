@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use Core\DB;
+use DB;
 use Core\Request;
 use Exception;
 
@@ -13,7 +13,7 @@ class WebController
         $dbstatus_message = '<span>POSTGRE database successfully connected</span>';
 
         try {
-            DB::pg();
+            DB::core();
         } catch (Exception $e) {
             $dbstatus_message = "<b style=\"color:red\">POSTGRE connection error:</b> " . $e->getMessage();
         }

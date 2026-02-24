@@ -11,8 +11,11 @@ if (env('APP_DEBUG') === true) {
 
 use Core\Route;
 
-require dirname(__DIR__) . '/routes/api.php';
+// load aliases
+class_alias(\Database\Connection::class, 'DB');
 
+// load routers
+require dirname(__DIR__) . '/routes/api.php';
 require dirname(__DIR__) . '/routes/web.php';
 
 Route::fallback(function () {

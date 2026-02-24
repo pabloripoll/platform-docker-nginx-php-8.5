@@ -136,15 +136,24 @@ class Route
         $path = rtrim($path, '/');
         if ($path === '') $path = '/';
 
-        $regex = preg_replace_callback('/\{([^}]+)\}/', function ($m) use (&$paramNames) {
-            $paramNames[] = $m[1];
-            return '([^\/]+)';
-        }, $path);
+        // First escape the path for regex
+        $regex = preg_quote($path, '#');
 
-        // escape slashes and other regex significant chars (but keep our capture groups)
-        $regex = preg_quote($regex, '#');
-        // restore parentheses from capture groups (preg_quote will escape them)
-        $regex = str_replace('\([^\\\/]\+\)', '([^\/]+)', $regex);
+        // Then replace the escaped parameter placeholders with capture groups
+        $regex = preg_replace_callback('/\\\{([^}]+)\\\}/', function ($m) use (&$paramNames) {
+            $paramName = $m[1];
+
+            // Check if optional (ends with ?)
+            $isOptional = substr($paramName, -1) === '?';
+            if ($isOptional) {
+                $paramName = substr($paramName, 0, -1);
+            }
+
+            $paramNames[] = $paramName;
+
+            // Return capture group, optional if needed
+            return $isOptional ? '([^\/]+)?' : '([^\/]+)';
+        }, $regex);
 
         return [$regex, $paramNames];
     }
