@@ -53,6 +53,17 @@ autostart=true
 autorestart=true
 startretries=0
 ```
+
+## PECL - PHP Extensions
+
+### RabbitMQ / Redis
+
+- https://pkgs.alpinelinux.org/package/edge/community/x86_64/php85-pecl-amqp
+
+### Mongodb
+
+- https://pkgs.alpinelinux.org/packages?name=php85-pecl-mongodb&branch=v3.23
+
 <br>
 
 ## <a id="management"></a>Container Management
