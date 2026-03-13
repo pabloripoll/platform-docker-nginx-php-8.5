@@ -103,7 +103,7 @@ RUN apk add --no-cache \
 #    rm -rf /tmp/pear ~/.pearrc
 
 ## Install MongoDB extension from PECL
-#RUN pecl install mongodb-2.1.0 \
+#RUN pecl install mongodb \
 #    && docker-php-ext-enable mongodb
 
 ## PHP required extensions from Docker
